@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: docker-k8s-num-generator
+  labels:
+    app: docker-k8s-num-gnerator-app
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: docker-k8s-num-gnerator-app
+
+  template:
+    metadata:
+      labels:
+        app: docker-k8s-num-gnerator-app
+    spec:
+      containers:
+        - name: docker-k8s-num-gnerator-app
+          image: srinivasnayak8/num-generator
+          ports:
+            - containerPort: 8085
+
+
