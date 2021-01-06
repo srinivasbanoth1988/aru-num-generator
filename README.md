@@ -43,17 +43,3 @@ multiple nodes/clusters.
 
 
 
-####Bulk Generate Test Case 2:
-
-###### sample input
-
-[
-]
-
-###### sample response
-
-{
-    "task": "4411973f-235c-4f47-929e-727546d203a6"
-}
-
-
