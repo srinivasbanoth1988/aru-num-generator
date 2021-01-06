@@ -43,7 +43,7 @@ multiple nodes/clusters.
 
 ## Google Cloud k8s Deployment Steps
 
-Deployed on google cloud k8s.
+
 
 1. Create K8s Cluster from google cloud UI.
 	* Kubernetes Engine > Clusters > Create Cluster
