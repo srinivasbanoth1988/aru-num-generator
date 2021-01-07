@@ -37,12 +37,18 @@ Note: Application runs on port 8085 by default.
 ### Sample multiple tasks Request: 
 
 ```json
-[{
-"goal":"10",
-"step": "2"
+[
+	{
+	"goal":100,
+	"step":12
 },
-{"goal":"10",
-"step": "5"
+{
+	"goal":200,
+	"step":10
+},
+{
+	"goal":10,
+	"step":1
 }
 ]
 ```
@@ -62,10 +68,7 @@ Note: Application runs on port 8085 by default.
 ```
 ### Sample Response for fetching results:
 ```json
-{
-    "results": ["10,8,6,4,2,0",
-                "10,5,0"]
-}
+{"results":["100,88,76,64,52,40,28,16,4","200,190,180,170,160,150,140,130,120,110,100,90,80,70,60,50,40,30,20,10,0","10,9,8,7,6,5,4,3,2,1,0"]}
 ```
 ## Assumptions
 
