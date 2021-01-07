@@ -22,8 +22,9 @@ Note: Application runs on port 8085 by default.
 | --- | --- | --- 
 | `/api/generate` | POST | Create/submit single task and returns task(taskId)
 | `/api/tasks/{uuid}/status` | GET | Fetches the status of a taskid
-| `/api/tasks/uuid?action=get_numlist` | GET | Fetches generated numbers list or string
+| `/api/tasks/{uuid}?action=get_numlist` | GET | Fetches generated numbers list or string
 | `/api/bulkGenerate` |  POST | Create/submit multiple tasks and returns task(taskId)
+| `/api/tasks/{uuid}` |  POST | Create/submit multiple tasks and returns task(taskId)
 
 ### Sample Single task Request: 
 
