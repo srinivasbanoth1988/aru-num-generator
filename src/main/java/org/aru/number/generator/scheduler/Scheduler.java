@@ -14,7 +14,6 @@ public class Scheduler {
     @Autowired
     private TaskService taskProcessor;
     @Scheduled(cron ="* * * * * ?")
-    @Async
     public void processTasks() {
         taskProcessor.processTasks();
     }

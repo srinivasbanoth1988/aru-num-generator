@@ -11,7 +11,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 /**
  * Task service responsible for generating number. We are using static map to hold status and results. To Works with large data sets and distributed systems,
@@ -23,9 +25,9 @@ public class TaskService {
     /** holds the tasks submitted from apis, Scheduler polls task from this queue and process.**/
     private final static ConcurrentLinkedQueue<Tasks> tasks = new ConcurrentLinkedQueue<>();
     /** This map holds results as array of strings**/
-    private final static Map<String, String[]> holder = new HashMap<>();
+    private final static Map<String, String[]> holder = new ConcurrentHashMap<>();
     /** this map holds the current status of the task**/
-    private final static Map<String, Status> taskStatusHolder =  new HashMap<>();
+    private final static Map<String, Status> taskStatusHolder =  new ConcurrentHashMap<>();
 
     /**
      * Utility method to add tasks to queue
