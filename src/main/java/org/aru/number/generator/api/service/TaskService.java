@@ -1,6 +1,7 @@
 package org.aru.number.generator.api.service;
 
 import org.aru.number.generator.enums.Status;
+import org.aru.number.generator.exception.TaskException;
 import org.aru.number.generator.model.APIResponse;
 import org.aru.number.generator.model.Tasks;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public class TaskService {
     /** holds the tasks submitted from apis, Scheduler polls task from this queue and process.**/
     private final static ConcurrentLinkedQueue<Tasks> tasks = new ConcurrentLinkedQueue<>();
     /** This map holds results as array of strings**/
-    private final static Map<String, List<String>> holder = new HashMap<>();
+    private final static Map<String, String[]> holder = new HashMap<>();
     /** this map holds the current status of the task**/
     private final static Map<String, Status> taskStatusHolder =  new HashMap<>();
 
@@ -34,8 +35,9 @@ public class TaskService {
      */
     @Async
     public APIResponse publishTasks(Tasks tsks) {
-        logger.info("> sendAsyncWithResult");
         tasks.add(tsks);
+        updateStatus(tsks.getTaskId(),Status.SUBMITTED);
+        logger.info("Task added to Queue {}", tsks.getTaskId());
         return new APIResponse(tsks.getTaskId(), null);
 
     }
@@ -46,20 +48,52 @@ public class TaskService {
     public void processTasks() {
         while (!tasks.isEmpty()) {
             Tasks tsks = tasks.poll();
+            logger.info("Processing started for task id {}", tsks.getTaskId());
             taskStatusHolder.put(tsks.getTaskId(), Status.IN_PROGRESS);
-            tsks.getTasks().stream().forEach(tsk -> {
+            List<Integer> indexs =  new ArrayList<>();
+            tsks.getTasks().parallelStream().forEachOrdered(tsk -> {
                 CompletableFuture.supplyAsync(() -> {
                     List<Integer> seq =  new ArrayList<>();
-                    for (int i = tsk.getGoal() ; i>=0 ; i=i-tsk.getStep()) {
-                        seq.add(i);
+                    try {
+                        for (int i = tsk.getGoal() ; i>=0 ; i=i-tsk.getStep()) {
+                            seq.add(i);
+                        }
+                    } catch (Exception ex) {
+                        logger.error("Exception occurred in sequnece generation  and task id {}",tsks.getTaskId());
+                        updateStatus(tsks.getTaskId(), Status.ERROR);
+                        throw new TaskException(tsks.getTaskId());
                     }
+
+
                     return seq.stream().map(String::valueOf)
                             .collect(Collectors.joining(","));
-                }).thenAccept(result -> fillGeneratedNumbers(tsks.getTasks().size(),tsks.getTaskId(),result));
+                }).thenAccept(result -> {
+                    try {
+                        updateStatus(tsks.getTaskId(), Status.IN_PROGRESS);
+                        String[]  stringList = holder.getOrDefault(tsks.getTaskId(), new String[tsks.getTasks().size()]);
+                        int index  = tsks.getTasks().indexOf(tsk);
+                        stringList[index] = result;
+                        holder.put(tsks.getTaskId(), stringList);
+                        indexs.add(index);
+                        if(stringList.length == indexs.size()) {
+                            updateStatus(tsks.getTaskId(), Status.SUCCESS);
+                            logger.info("Processing ended for task id {}", tsks.getTaskId());
+                        }
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                        logger.error("Exception occurred in sequnece generation and task id {}",tsks.getTaskId());
+                        updateStatus(tsks.getTaskId(), Status.ERROR);
+                        throw new TaskException(tsks.getTaskId());
+                    }
+
+                });
             });
+
         }
 
     }
+
+
 
     /**
      * Utility method to fetch results of a particular task submitted.
@@ -68,12 +102,12 @@ public class TaskService {
      * @return - APIResponse with results.
      */
     public APIResponse getResults(final String uuid) {
-        List<String> result =  holder.getOrDefault(uuid,new ArrayList<>());
+        String[] result =  holder.getOrDefault(uuid, new String[0]);
 
         APIResponse apiResponse =  new APIResponse();
-        if(result.size() == 1) {
-            apiResponse.setResult(result.get(0));
-        } else apiResponse.setResults(result);
+        if(result.length == 1) {
+            apiResponse.setResult(result[0]);
+        } else apiResponse.setResults(Arrays.asList(result));
 
         return apiResponse;
     }
@@ -95,24 +129,5 @@ public class TaskService {
      */
     public synchronized void  updateStatus(final String uuid, final Status status) {
         taskStatusHolder.put(uuid, status);
-    }
-    /**
-     * Utility method to update/save results of a particular task submitted.
-     *
-     * @param size - submitted tasks size
-     * @param uuid - task id
-     * @param results - task results
-     * @return - returns status of a task.
-     */
-    public synchronized void fillGeneratedNumbers(int size, String uuid , String results) {
-        updateStatus(uuid, Status.IN_PROGRESS);
-        List<String>  stringList = holder.getOrDefault(uuid, new ArrayList<>());
-        stringList.add(results);
-        holder.put(uuid, stringList);
-        if(size == holder.get(uuid).size()) {
-            updateStatus(uuid, Status.SUCCESS);
-        }
-
-
     }
 }

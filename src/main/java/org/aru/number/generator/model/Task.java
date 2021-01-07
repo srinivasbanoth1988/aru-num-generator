@@ -6,6 +6,7 @@ public class Task implements Serializable {
     private String task;
     private Integer goal;
     private Integer step;
+    
 
     public Integer getGoal() {
         return goal;

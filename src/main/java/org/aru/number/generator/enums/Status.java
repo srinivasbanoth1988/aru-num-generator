@@ -1,6 +1,7 @@
 package org.aru.number.generator.enums;
 
 public enum Status {
+    SUBMITTED("Submitted"),
     SUCCESS("Status"),
     IN_PROGRESS("In Progress"),
     ERROR("Error");
