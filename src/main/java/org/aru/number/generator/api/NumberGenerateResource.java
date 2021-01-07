@@ -29,8 +29,11 @@ public class NumberGenerateResource {
      */
     @PostMapping("/generate")
     public ResponseEntity<APIResponse> generateNumbers(@RequestBody Task task) {
+        String uuid = UUID.randomUUID().toString();
+        APIResponse response = new APIResponse(uuid, null);
+        holder.publishTasks(new Tasks(uuid, task));
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(holder.publishTasks(new Tasks(UUID.randomUUID().toString(),task)));
+                .body(response);
     }
 
     /**
