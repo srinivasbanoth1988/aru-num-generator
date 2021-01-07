@@ -48,7 +48,8 @@ multiple nodes/clusters.
 1. Create K8s Cluster from google cloud UI.
 	* Kubernetes Engine > Clusters > Create Cluster
 	* Enter name ex: docker-k8s-num-generator-service
-	* Click on "Create" buttondocker-k8s-num-generator.yaml	* This process takes few minutes.
+	* Click on "Create" 
+	* This process takes few minutes.
 2. Once Cluster is created follow below steps to upload
 	* Select cluster and click on "connect" button
 	* "Connect to the cluster" popup will apprer
