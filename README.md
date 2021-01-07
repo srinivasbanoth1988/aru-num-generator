@@ -1,3 +1,72 @@
+
+# Number Generator Application
+
+### Instructions to Build & Run:
+
+Steps to run the application from IDE:
+1. Clone the GIT Repository
+2. Import project into any IDE like Intellij using pom.xml
+3. Run App from Intellij Configuration straight away
+4. (Or) Go to AruNumGeneratorApplication File -> Right Click -> Run
+
+From command line:
+
+1. Build the project using pom.xml - > mvn clean install
+2. Run the application -> java -jar target/aru-num-generator-0.0.1-SNAPSHOT.jar
+
+Note: Application runs on port 8085 by default.
+
+###API Endpoints:
+
+| Command | HTTP Method | Description
+| --- | --- | --- 
+| `/api/generate` | POST | Create/submit single task and returns task(taskId)
+| `/api/tasks/{uuid}/status` | GET | Fetches the status of a taskid
+| `/api/tasks/uuid?action=get_numlist` | GET | Fetches generated numbers list or string
+| `/api/bulkGenerate` |  POST | Create/submit multiple tasks and returns task(taskId)
+
+### Sample Single task Request: 
+
+```json
+{
+"goal":"10",
+"step": "2"
+
+}
+```
+### Sample multiple tasks Request: 
+
+```json
+[{
+"goal":"10",
+"step": "2"
+},
+{"goal":"10",
+"step": "5"
+}
+]
+```
+
+### Sample Response for task submission:
+```json
+{
+    "task": "c15ffa02-4eb6-4fa9-9265-ff5cbc270075"
+}
+```
+
+### Sample Response for fetching result:
+```json
+{
+    "result": "10,8,6,4,2,0"
+}
+```
+### Sample Response for fetching results:
+```json
+{
+    "results": ["10,8,6,4,2,0",
+                "10,5,0"]
+}
+```
 ## Assumptions
 
 1. Not handling any error scenarios
@@ -16,30 +85,6 @@ multiple nodes/clusters.
 
 7. Accepting only 1000 in bulkgenerate request
 
-####Bulk Generate Test Case 1:
-
-###### sample input
-
-[
-	{
-	"goal":1000,
-	"step":12
-},
-{
-	"goal":1000,
-	"step":10
-},
-{
-	"goal":10,
-	"step":1
-}
-]
-
-###### sample response
-
-{
-    "task": "4411973f-235c-4f47-929e-727546d203a6"
-}
 
 ## Google Cloud k8s Deployment Steps
 
@@ -48,8 +93,7 @@ multiple nodes/clusters.
 1. Create K8s Cluster from google cloud UI.
 	* Kubernetes Engine > Clusters > Create Cluster
 	* Enter name ex: docker-k8s-num-generator-service
-	* Click on "Create" 
-	* This process takes few minutes.
+	* Click on "Create" buttondocker-k8s-num-generator.yaml	* This process takes few minutes.
 2. Once Cluster is created follow below steps to upload
 	* Select cluster and click on "connect" button
 	* "Connect to the cluster" popup will apprer
@@ -66,6 +110,3 @@ multiple nodes/clusters.
 	* once above step is finished, expose the app and add loadbalancer(external ip).
 	
 3. Delete the cluster once testing is completed to avoid charges.
-
-
-
